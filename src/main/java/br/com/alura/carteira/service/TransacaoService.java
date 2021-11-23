@@ -7,6 +7,7 @@ import br.com.alura.carteira.repository.TransacaoRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +27,10 @@ public class TransacaoService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void cadastrar(TransacaoFormDto dto) {
         Transacao transacao = modelMapper.map(dto, Transacao.class);
+        transacao.setId(null);
         transacaoRepository.save(transacao);
     }
 }
