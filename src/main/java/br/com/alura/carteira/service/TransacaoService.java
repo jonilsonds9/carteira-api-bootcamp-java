@@ -6,6 +6,8 @@ import br.com.alura.carteira.modelo.Transacao;
 import br.com.alura.carteira.repository.TransacaoRepository;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,11 +22,9 @@ public class TransacaoService {
     private final TransacaoRepository transacaoRepository;
     private final ModelMapper modelMapper = new ModelMapper();
 
-    public List<TransacaoDto> listar() {
-        List<Transacao> transacoes = transacaoRepository.findAll();
-        return transacoes.stream()
-                .map(t -> modelMapper.map(t, TransacaoDto.class))
-                .collect(Collectors.toList());
+    public Page<TransacaoDto> listar(Pageable paginacao) {
+        Page<Transacao> transacoes = transacaoRepository.findAll(paginacao);
+        return transacoes.map(t -> modelMapper.map(t, TransacaoDto.class));
     }
 
     @Transactional
