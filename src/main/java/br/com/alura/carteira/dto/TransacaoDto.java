@@ -12,9 +12,10 @@ import java.time.LocalDate;
 @Setter
 public class TransacaoDto {
 
+    private Long id;
     private String ticker;
     private BigDecimal preco;
-    private int quantidade;
+    private Integer quantidade;
     private TipoTransacao tipo;
 
 }
