@@ -2,32 +2,40 @@ package br.com.alura.carteira.controller;
 
 import br.com.alura.carteira.dto.TransacaoDto;
 import br.com.alura.carteira.dto.TransacaoFormDto;
-import br.com.alura.carteira.modelo.Transacao;
-import org.modelmapper.ModelMapper;
+import br.com.alura.carteira.service.TransacaoService;
+import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
+import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/transacoes")
+@AllArgsConstructor
 public class TransacaoController {
 
-    private List<Transacao> transacoes = new ArrayList<>();
-    private ModelMapper modelMapper = new ModelMapper();
+    private TransacaoService service;
 
     @GetMapping
-    public List<TransacaoDto> listar() {
-        return transacoes.stream()
-                .map(t -> modelMapper.map(t, TransacaoDto.class))
-                .collect(Collectors.toList());
+    public Page<TransacaoDto> listar(@PageableDefault(size = 10) Pageable paginacao) {
+        return service.listar(paginacao);
     }
 
     @PostMapping
-    public void cadastrar(@RequestBody @Valid TransacaoFormDto dto) {
-        Transacao transacao = modelMapper.map(dto, Transacao.class);
-        transacoes.add(transacao);
+    public ResponseEntity<TransacaoDto> cadastrar(@RequestBody @Valid TransacaoFormDto dto
+                                                  , UriComponentsBuilder uriBuilder) {
+        TransacaoDto transacaoDto = service.cadastrar(dto);
+
+        URI uri = uriBuilder
+                .path("/transacoes/{id}")
+                .buildAndExpand(transacaoDto.getId())
+                .toUri();
+        return ResponseEntity.created(uri).body(transacaoDto);
     }
 }
