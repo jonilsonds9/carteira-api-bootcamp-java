@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,12 +34,18 @@ public class TransacaoService {
     @Transactional
     public TransacaoDto cadastrar(TransacaoFormDto dto) {
         Long usuarioId = dto.getUsuarioId();
-        Usuario usuario = usuarioRepository.getById(usuarioId);
 
-        Transacao transacao = modelMapper.map(dto, Transacao.class);
-        transacao.setId(null);
-        transacao.setUsuario(usuario);
-        transacaoRepository.save(transacao);
-        return modelMapper.map(transacao, TransacaoDto.class);
+        try {
+            Usuario usuario = usuarioRepository.getById(usuarioId);
+            Transacao transacao = modelMapper.map(dto, Transacao.class);
+            transacao.setId(null);
+            transacao.setUsuario(usuario);
+
+            transacaoRepository.save(transacao);
+
+            return modelMapper.map(transacao, TransacaoDto.class);
+        } catch (EntityNotFoundException e) {
+            throw new IllegalArgumentException("usuario inexistente");
+        }
     }
 }
