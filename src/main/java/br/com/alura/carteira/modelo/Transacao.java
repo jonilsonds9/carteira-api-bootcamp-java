@@ -28,4 +28,13 @@ public class Transacao {
 
     @ManyToOne
     private Usuario usuario;
+
+    public Transacao(String ticker, LocalDate data, BigDecimal preco, int quantidade, TipoTransacao tipo, Usuario usuario) {
+        this.ticker = ticker;
+        this.preco = preco;
+        this.quantidade = quantidade;
+        this.data = data;
+        this.tipo = tipo;
+        this.usuario = usuario;
+    }
 }
